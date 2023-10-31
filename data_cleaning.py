@@ -1,12 +1,15 @@
-import pandas as pd
 from datetime import date
+import pandas as pd
+
 
 class DataCleaning():
     ''' 
     This is a class created primarily to define methods to clean data 
     '''
+    def __init__(self):
+        pass
 
-    def clean_user_data_dates(self, df, column):
+    def clean_user_data_dates(self, df: pd.DataFrame, column: pd.Series) -> pd.Series:
         '''
         Cleans formatting errors in date of birth and joining dates. Used in the function clean_user_data
         
@@ -16,8 +19,6 @@ class DataCleaning():
         Returns:
             Formatted date columns
         '''
-        
-
         df['year'] = df[column].str.extract(r'(\d{4})')
         df['month'] = df[column].str.extract(r'([a-zA-Z]+)')
         month_to_number = {
@@ -47,7 +48,7 @@ class DataCleaning():
         return df[column]
     
 
-    def clean_user_data(self, df):
+    def clean_user_data(self, df: pd.DataFrame) -> pd.DataFrame:
         ''' 
         Cleans user data from legacy_user table
         
@@ -55,11 +56,11 @@ class DataCleaning():
             legacy_user table
         
         Returns:
-            Clean data including formatted telephone number, addresses, removal of NULL etc
+            Clean dataframe including formatted telephone number, addresses, removal of NULL etc
         '''
         #1. Sorting inconsistency in country and country codes  
-        condition = (df['country_code'] == 'GGB')
-        df.loc[condition,'country_code'] = 'GB'
+        country_code_inconsistency = (df['country_code'] == 'GGB')
+        df.loc[country_code_inconsistency,'country_code'] = 'GB'
 
         #2. Removes rows with all NULL values
         null_filter = (df['date_of_birth']!='NULL')
@@ -80,11 +81,8 @@ class DataCleaning():
         clean_df['date_of_birth'] = self.clean_user_data_dates(clean_df, 'date_of_birth')
         clean_df['join_date'] = self.clean_user_data_dates(clean_df, 'join_date')
 
-        #6. FORMATTING TELEPHONE NUMBERS
+        #6. FORMATTING TELEPHONE NUMBERS TO MAKE THEM CONSISTENT (COUNTRY CODE - AREA CODE - NUMBER - EXTENSION)
         # (i) adding country phone codes
-        uk_filter = (clean_df['country'] == 'United Kingdom')
-        de_filter = (clean_df['country'] == 'Germany')
-        us_filter = (clean_df['country'] == 'United States')
         clean_df['phone_country_code'] = ''
         clean_df.loc[uk_filter,'phone_country_code'] = '+44 (0) '
         clean_df.loc[de_filter,'phone_country_code'] = '+49 (0) '
@@ -94,9 +92,9 @@ class DataCleaning():
 
         clean_df[['main_phone_number','us_extension']] = clean_df['phone_number'].str.split('x', expand=True)
         clean_df['us_extension'] = clean_df['us_extension'].astype(str).replace('None','') 
-        condition =  (clean_df['us_extension'] != '')
-        clean_df.loc[condition, 'us_extension'] = 'x' + clean_df['us_extension']
-        clean_df['main_phone_number'] = clean_df['main_phone_number'].replace(r'[^0-9]', '', regex=True).astype(str)
+        extension_available =  (clean_df['us_extension'] != '')
+        clean_df.loc[extension_available, 'us_extension'] = 'x' + clean_df['us_extension']
+        clean_df['main_phone_number'] = clean_df['main_phone_number'].replace(r'[^0-9]', '', regex=True).astype(str) #Removing any non-digit character
         
         def main_phone_number(row):
             if row['country'] == 'United Kingdom' or row['country'] == 'United States':
@@ -123,7 +121,7 @@ class DataCleaning():
         return clean_df
     
 
-    def clean_card_data(self, df):
+    def clean_card_data(self, df: pd.DataFrame) -> pd.DataFrame:
         '''
         Cleans card data
 
@@ -155,7 +153,7 @@ class DataCleaning():
         return clean_df
         
 
-    def clean_store_data(self, store_df):
+    def clean_store_data(self, store_df: pd.DataFrame) -> pd.DataFrame:
         '''
         Cleans store data
 
@@ -179,7 +177,6 @@ class DataCleaning():
         store_df_clean.loc[fil2,'continent'] = 'America'
 
         #4. Correctly assigning continent based on country code (assuming country code is correct)
-
         uk_filter = (store_df_clean['country_code'] == 'GB')
         de_filter = (store_df_clean['country_code'] == 'DE')
         us_filter = (store_df_clean['country_code'] == 'US')
@@ -203,7 +200,7 @@ class DataCleaning():
         return store_df_clean
     
 
-    def convert_product_weights(self, product_df2):
+    def convert_product_weights(self, product_df2: pd.DataFrame) -> pd.DataFrame:
         '''
         Converts weieght column from multiple formats to single consistent kg format
 
@@ -247,7 +244,7 @@ class DataCleaning():
         return product_df2
 
 
-    def clean_products_data(self, product_df):
+    def clean_products_data(self, product_df: pd.DataFrame) -> pd.DataFrame:
         '''
         Cleans product details data
         
@@ -286,7 +283,7 @@ class DataCleaning():
         return product_df2
 
 
-    def clean_orders_data(self, df):
+    def clean_orders_data(self, df: pd.DataFrame) -> pd.DataFrame:
         '''
         Cleans orders data by removing unnecessary columns
 
@@ -301,7 +298,7 @@ class DataCleaning():
         return df
 
 
-    def clean_order_dates(self,df):
+    def clean_order_dates(self,df: pd.DataFrame) -> pd.DataFrame:
         '''
         Cleans date and time details of order
 

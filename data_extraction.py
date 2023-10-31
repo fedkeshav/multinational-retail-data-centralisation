@@ -1,18 +1,19 @@
-
-import sqlalchemy as db
-import database_utils
-import pandas as pd
-import tabula
-import requests
-import yaml
 import boto3
+import pandas as pd
+import requests
+import sqlalchemy as db
+from sqlalchemy.engine import Connection
+import tabula
+
 
 class DataExtractor():
     ''' 
     This is a class created primarily to define methods to extract data from datatables, S3 buckets etc 
     '''    
+    def __init__(self):
+        pass
     
-    def list_db_tables(self,engine):
+    def list_db_tables(self,engine: Connection) -> dict:
         '''
         Shows list of table names stored in database
 
@@ -27,7 +28,7 @@ class DataExtractor():
         return x
 
 
-    def read_rds_tables(self,engine,table_name):
+    def read_rds_tables(self,engine: Connection,table_name: str) -> pd.DataFrame:
         '''
         Reads table from database into a dataframe
 
@@ -41,7 +42,7 @@ class DataExtractor():
         df = pd.read_sql_table(table_name, engine)
         return df
     
-    def retrieve_pdf_data(self, url):
+    def retrieve_pdf_data(self, url: str) -> pd.DataFrame:
         '''
         Converts data from pdf into a dataframe
 
@@ -60,7 +61,7 @@ class DataExtractor():
             result_df = pd.concat(dataframes, ignore_index=True)
         return result_df
     
-    def list_number_of_stores(self, endpoint, headers):
+    def list_number_of_stores(self, endpoint: str, headers: str) -> int:
         '''
         Identifies the number of stores for which there is data through API
 
@@ -75,7 +76,7 @@ class DataExtractor():
         stores = data['number_stores']
         return stores
     
-    def retrieve_store_info(self, endpoint, headers, stores):
+    def retrieve_store_info(self, endpoint: str, headers: str, stores: int) -> pd.DataFrame:
         '''
         Collects data on all stores and returns them as a consolidated dataframe
 
@@ -110,7 +111,7 @@ class DataExtractor():
         df = pd.read_csv(local_storage)
         return df
 
-    def extract_from_s3_json(self,bucket, file, local_storage):
+    def extract_from_s3_json(self,bucket: str, file: str, local_storage: str) -> pd.DataFrame:
         '''
         Reads and converts data from JSON in S3 bucket into a dataframe
 

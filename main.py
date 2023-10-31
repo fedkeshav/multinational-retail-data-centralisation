@@ -3,9 +3,7 @@ import database_utils
 import data_cleaning
 import data_extraction
 import pandas as pd
-import tabula
 import yaml
-import requests
 
 # Creating instances of each class
 db_conn = database_utils.DatabaseConnector()
@@ -123,10 +121,3 @@ orderdates_clean_df = db_cleaning.clean_order_dates(df)
 
 # Uploading data
 db_conn.upload_to_db(orderdates_clean_df,'dim_date_times')
-
-'''NEXT STEPS
-1. Add docstrings
-2. Clean code
-3. Add to github
-
-'''
