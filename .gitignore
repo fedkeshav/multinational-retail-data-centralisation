@@ -1,0 +1,9 @@
+*.yaml
+_doubts.txt
+__pycache__
+*.csv
+z_extract_card_data.py
+z_extract_store_data
+z_product_details.py
+card_details.pdf
+try*.py
