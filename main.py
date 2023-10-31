@@ -38,10 +38,6 @@ card_df = db_extract.retrieve_pdf_data(url)
 # Cleaning card data
 card_clean_df = db_cleaning.clean_card_data(card_df)
 
-'''
-??? Should you store date as date object or datetime object here? Date object just shows as object 
-'''
-
 # Uploading data
 db_conn.upload_to_db(card_clean_df,'dim_card_details')
 
@@ -55,7 +51,6 @@ with open('api_creds.yaml','r') as creds:
 endpoint = api_creds['NUMBER_STORES_EP']
 headers = {'x-api-key': api_creds['API_KEY']}
 number_stores = db_extract.list_number_of_stores(endpoint, headers)
-
 retrieve_endpoint = api_creds['RETRIEVE_STORE_EP']
 store_df = db_extract.retrieve_store_info(retrieve_endpoint, headers, number_stores)
 
@@ -64,8 +59,6 @@ store_clean_df = db_cleaning.clean_store_data(store_df)
 
 # Uploading data
 db_conn.upload_to_db(store_clean_df,'dim_store_details')
-
-
 
 # %%
 '''4. CLEANING AND UPLOADING PRODUCT DETAILS DATA FROM AWS S3 BUCKET'''
@@ -76,7 +69,6 @@ with open('s3_creds.yaml','r') as creds:
 bucket = s3_creds['BUCKET']
 file = s3_creds['FILE1']
 local_path = '/Users/keshavparthasarathy/Documents/AICore_projects/multinational-retail-data-centralisation/products.csv'
-
 df = db_extract.extract_from_s3(bucket,file,local_path)
 
 # Cleaning product details data
@@ -113,7 +105,6 @@ with open('s3_creds.yaml','r') as creds:
 bucket = s3_creds['BUCKET']
 file = s3_creds['FILE2']
 local_path = '/Users/keshavparthasarathy/Documents/AICore_projects/multinational-retail-data-centralisation/products.csv'
-
 df = db_extract.extract_from_s3_json(bucket,file,local_path)
 
 # Cleaning data
