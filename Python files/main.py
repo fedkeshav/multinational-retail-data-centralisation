@@ -32,7 +32,7 @@ db_conn.upload_to_db(user_clean_df,'dim_users')
 '''2. CLEANING AND UPLOADING CARD DATA FROM PDF ON AWS'''
 
 # Reading card data from PDF
-url = "card_details.pdf"
+url = "/Users/keshavparthasarathy/Documents/AICore_projects/multinational-retail-data-centralisation/card_details.pdf"
 card_df = db_extract.retrieve_pdf_data(url)
 
 # Cleaning card data
