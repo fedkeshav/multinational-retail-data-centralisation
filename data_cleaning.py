@@ -146,7 +146,7 @@ class DataCleaning():
 
         #4. Changing card number to numeric type (for space?)
         clean_df['card_number'] = clean_df['card_number'].replace(r'[^\d]','',regex=True)
-        clean_df['card_number'] = pd.to_numeric(clean_df['card_number'], errors = 'coerce')
+        #clean_df['card_number'] = pd.to_numeric(clean_df['card_number'], errors = 'coerce')
 
         #5. Resetting index
         clean_df  = clean_df.reset_index(drop=True)
@@ -163,12 +163,13 @@ class DataCleaning():
         Returns:
             Cleaned dataframe             
         '''
-        #1. When lat is not NA, you can see values of all columns are wrong. So only keeping rows that are NA
-        store_df_clean = store_df[store_df['lat'].isna()]
+        #1. When lat is not NA, you can see values of all columns are wrong except when store type is web portal. So only keeping rows that are NA
+        condition1 = store_df['lat'].isna() 
+        condition2 = (store_df['store_type']=='Web Portal')
+        store_df_clean = store_df[condition1 | condition2 ]
 
         #2. Deleting irrelevant rows and columns
-        store_df_clean.drop([0,'lat','index'], axis=1,inplace=True)
-        store_df_clean = store_df_clean.drop(450)
+        store_df_clean.drop(['lat','index'], axis=1,inplace=True)
 
         #3. Renaming typos in continent
         fil1 = (store_df_clean['continent'] == 'eeEurope')
@@ -188,8 +189,8 @@ class DataCleaning():
         store_df_clean['address'] = store_df_clean['address'].str.replace('\n',' ')
 
         #6. Changing to right data types for some columns
-        store_df_clean['longitude'] = store_df_clean['longitude'].astype(float)
-        store_df_clean['latitude'] = store_df_clean['latitude'].astype(float)
+        store_df_clean['longitude'] = pd.to_numeric(store_df_clean['longitude'], errors = 'coerce').astype(float)
+        store_df_clean['latitude'] = pd.to_numeric(store_df_clean['latitude'], errors = 'coerce').astype(float)
         store_df_clean['staff_numbers'] = store_df_clean['staff_numbers'].replace(r'[^\d]','',regex=True) # Taking out string characters in staff_numbers in 5 instances - assuming typo
         store_df_clean['staff_numbers'] = pd.to_numeric(store_df_clean['staff_numbers'], errors = 'coerce').astype('Int32')
         store_df_clean['opening_date'] = pd.to_datetime(store_df_clean['opening_date'], format = 'mixed').dt.date
@@ -320,10 +321,11 @@ class DataCleaning():
         clean_df2['year'] = clean_df2['year'].astype(int)
         clean_df2['month'] = pd.to_numeric(clean_df2['month'], errors='coerce').astype(int)
         clean_df2['day'] = pd.to_numeric(clean_df2['day'], errors='coerce').astype(int)
-        clean_df2['date'] = pd.to_datetime(clean_df2[['year','month','day']])
+        return clean_df2
 
         #3. Creating date variable and deleting unnecessary columns
-        clean_df2.drop(['month','day','year'], axis=1,inplace=True)
-        desired_order = ['date','timestamp','time_period','date_uuid']
-        clean_df2 = clean_df2[desired_order]
-        return clean_df2
+        #clean_df2['date'] = pd.to_datetime(clean_df2[['year','month','day']])
+        #clean_df2.drop(['month','day','year'], axis=1,inplace=True)
+        #desired_order = ['date','timestamp','time_period','date_uuid']
+        #clean_df2 = clean_df2[desired_order]
+        

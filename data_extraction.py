@@ -87,7 +87,7 @@ class DataExtractor():
             A consolidated dataframe with details of the stores
         '''
         dataframes = []
-        for i in range(1,stores+1):
+        for i in range(0,stores):
             url = endpoint + str(i)
             response = requests.get(url, headers = headers)
             data = response.json()

@@ -53,12 +53,13 @@ headers = {'x-api-key': api_creds['API_KEY']}
 number_stores = db_extract.list_number_of_stores(endpoint, headers)
 retrieve_endpoint = api_creds['RETRIEVE_STORE_EP']
 store_df = db_extract.retrieve_store_info(retrieve_endpoint, headers, number_stores)
-
+#%%
 # Cleaning store data
 store_clean_df = db_cleaning.clean_store_data(store_df)
 
 # Uploading data
 db_conn.upload_to_db(store_clean_df,'dim_store_details')
+
 
 # %%
 '''4. CLEANING AND UPLOADING PRODUCT DETAILS DATA FROM AWS S3 BUCKET'''
