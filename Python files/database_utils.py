@@ -51,14 +51,11 @@ class DatabaseConnector():
             Nothing
         '''
 
-        DATABASE_TYPE = 'postgresql'
-        DBAPI = 'psycopg2'
-        USER = 'postgres'
-        PASSWORD = 'Unltdindia2017'
-        HOST = 'localhost'
-        PORT = 5432
-        DATABASE = 'sales_data'
-        url = (f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
+        with open('db_creds.yaml','r') as creds:
+            data_creds = yaml.safe_load(creds)
+        creds_list = data_creds.values()
+
+        url = (f"{creds_list[0]}+{creds_list[1]}://{creds_list[2]}:{creds_list[3]}@{creds_list[4]}:{creds_list[5]}/{creds_list[6]}")
         engine = db.create_engine(url)
         engine.connect()
         df.to_sql(table_name, engine, if_exists='replace')
