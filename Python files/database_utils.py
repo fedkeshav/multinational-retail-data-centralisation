@@ -3,6 +3,7 @@ from sqlalchemy.engine import Connection
 import yaml
 import pandas as pd
 
+
 class DatabaseConnector():
     '''
     This is a class created primarily to define methods to connect with and upload to the database
@@ -50,13 +51,10 @@ class DatabaseConnector():
         Returns:
             Nothing
         '''
-
         with open('db_creds.yaml','r') as creds:
             data_creds = yaml.safe_load(creds)
         creds_list = data_creds.values()
-
         url = (f"{creds_list[0]}+{creds_list[1]}://{creds_list[2]}:{creds_list[3]}@{creds_list[4]}:{creds_list[5]}/{creds_list[6]}")
         engine = db.create_engine(url)
         engine.connect()
         df.to_sql(table_name, engine, if_exists='replace')
-

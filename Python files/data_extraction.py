@@ -27,7 +27,6 @@ class DataExtractor():
         x = inspector.get_table_names()
         return x
 
-
     def read_rds_tables(self,engine: Connection,table_name: str) -> pd.DataFrame:
         '''
         Reads table from database into a dataframe
@@ -38,7 +37,6 @@ class DataExtractor():
         Returns:
             A dataframe
         '''
-
         df = pd.read_sql_table(table_name, engine)
         return df
     
@@ -52,7 +50,6 @@ class DataExtractor():
         Returns:
             A dataframe
         '''
-
         table = tabula.read_pdf(url, stream=False, pages='all')
         dataframes = []
         for i in range(0,len(table)):
@@ -88,12 +85,12 @@ class DataExtractor():
         '''
         dataframes = []
         for i in range(0,stores):
-            url = endpoint + str(i)
-            response = requests.get(url, headers = headers)
-            data = response.json()
-            df = pd.DataFrame([data])
-            dataframes.append(df)
-            result_df = pd.concat(dataframes,ignore_index=True)
+            url = endpoint + str(i) #Retrives url for each store number
+            response = requests.get(url, headers = headers) #Sends get request to each url
+            data = response.json() #Stores the response as json
+            df = pd.DataFrame([data]) #Converts the json data into dataframe
+            dataframes.append(df) #Appends each store data to master dataframe list
+            result_df = pd.concat(dataframes,ignore_index=True) #Concats the list to the aggregate dataframe
         return result_df
     
     def extract_from_s3(self,bucket, file, local_storage):
@@ -125,5 +122,3 @@ class DataExtractor():
         s3.download_file(bucket,file, local_storage)
         df = pd.read_json(local_storage)
         return df
-
-
